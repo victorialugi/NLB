@@ -24,21 +24,21 @@ resource "yandex_iam_service_account_static_access_key" "sa_key" {
 }
 
 resource "yandex_storage_bucket" "pictures" {
-  bucket    = "victoria-20261009" # смените на своё уникальное имя
-  acl       = "public-read"
-  folder_id = var.folder_id
-
+  bucket     = "victoria-20261009"
+  acl        = "public-read"
+  folder_id  = var.folder_id
   access_key = yandex_iam_service_account_static_access_key.sa_key.access_key
   secret_key = yandex_iam_service_account_static_access_key.sa_key.secret_key
 }
 
 resource "yandex_storage_object" "cat" {
-  bucket     = yandex_storage_bucket.pictures.bucket
-  key        = "cat.jpg"
-  source     = "${path.module}/cat.jpg"
-  acl        = "public-read"
-  access_key = yandex_iam_service_account_static_access_key.sa_key.access_key
-  secret_key = yandex_iam_service_account_static_access_key.sa_key.secret_key
+  bucket       = yandex_storage_bucket.pictures.bucket
+  key          = "cat.jpg"
+  source       = "${path.module}/cat.jpg"
+  acl          = "public-read"
+  content_type = "image/jpeg"
+  access_key   = yandex_iam_service_account_static_access_key.sa_key.access_key
+  secret_key   = yandex_iam_service_account_static_access_key.sa_key.secret_key
 }
 
 resource "yandex_compute_instance_group" "lamp" {
@@ -127,9 +127,9 @@ resource "yandex_lb_network_load_balancer" "nlb" {
     target_group_id = yandex_compute_instance_group.lamp.load_balancer[0].target_group_id
 
     healthcheck {
-      name = "http"
-      interval = 5
-      timeout  = 3
+      name                = "http"
+      interval            = 5
+      timeout             = 3
       healthy_threshold   = 2
       unhealthy_threshold = 3
       http_options {
